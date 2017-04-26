@@ -20,13 +20,13 @@ void printSolution(float dist[][V][V]);
 
 float printSolution(float dist[], int src, int parent[],float path[][V][V])
 {
-    printf("Vertex\t  Distance\tPath");
+ //   printf("Vertex\t  Distance\tPath");
     for (int i = 0; i < V; i++)
     {
 
         if(i!=src){
                  int arr[V]={-1,-1,-1,-1};
-        printf("\n%d -> %d \t\t %f\t\t%d ", src, i, dist[i], src);
+  //      printf("\n%d -> %d \t\t %f\t\t%d ", src, i, dist[i], src);
 
        printPath(parent, i,0,arr);
 
@@ -113,50 +113,10 @@ void dijkstra(float graph[V][V], int src,float path[][V][V])
     printSolution(dist, src, parent,path);
 }
 
-
-// Solves the all-pairs shortest path problem using Floyd Warshall algorithm
-void floydWarshall (float graph[V][V],float passenger[V][V],float path[V][V][V])
-{
-    float dist[V][V];
-    int i, j, k;
-
-    for (i = 0; i < V; i++)
-        for (j = 0; j < V; j++){
-            dist[i][j] = graph[i][j];
-            }
-
-    for (k = 0; k < V; k++)
-    {
-        // Pick all vertices as source one by one
-        for (i = 0; i < V; i++)
-        {
-            // Pick all vertices as destination for the
-            // above picked source
-            for (j = 0; j < V; j++)
-            {   path[i][j][0]=i;
-                // If vertex k is on the shortest path from
-                // i to j, then update the value of dist[i][j]
-                int l=1;
-                if (dist[i][k] + dist[k][j] < dist[i][j]){
-                    dist[i][j] = dist[i][k] + dist[k][j];
-
-                    while(path[i][j][l]!=-1) l++;
-                    path[i][j][l]=k;
-                    }
-
-        }
-    }
-    }
-
-    // Print the shortest distance matrix
-    printSolution(dist);
-}
-
 /* A utility function to print solution */
-void printSolution(float dist[V][V])
+void printSolution(float dist[V][V], char str[])
 {
-    printf ("Following matrix shows the shortest distances"
-            " between every pair of vertices \n");
+    printf ("\n %s \n", str);
     for (int i = 0; i < V; i++)
     {
         for (int j = 0; j < V; j++)
@@ -172,8 +132,7 @@ void printSolution(float dist[V][V])
 
 void printSolution(float dist[V][V][V])
 {
-    printf ("Following matrix shows the shortest distances"
-            " between every pair of vertices \n");
+    printf ("path");
     for (int i = 0; i < V; i++)
     {
         for (int j = 0; j < V; j++)
@@ -218,8 +177,8 @@ void update(float graph[][V],float weight[][V],float passenger[][V],float path[]
 
 int main()
 {
-    float graph[V][V] = { {0, 500,  15, 10},
-                        {INF, 0,   1, 30},
+    float graph[V][V] = { {0, 500, 15, 10},
+                        {INF, 0, 1, 30},
                         {INF, INF, 0,   1},
                         {INF, INF, INF, 0}
                       };
@@ -233,7 +192,7 @@ int main()
 
     for (int i=0;i<V;i++)
         for(int j=0;j<=i;j++){
-        //    graph[i][j]=graph[j][i];
+            graph[i][j]=graph[j][i];
         //    passenger[i][j]=passenger[j][i];
         }
 
@@ -243,18 +202,18 @@ int main()
         initialize(path,weight);
         int max_weight=0,to=0;
         update(graph,weight,passenger,path);
-        printSolution(weight);
-
+        printSolution(weight, "weight");
+        printf("\n final weight: ");
         for(int i=0;i<V;i++){
                 if(i==from[iter]) continue;
-                printf(" %f ", weight[from[iter]][i]/graph[from[iter]][i]);
+                printf("%f ", weight[from[iter]][i]/graph[from[iter]][i]);
             if(max_weight<weight[from[iter]][i]/graph[from[iter]][i]){
             max_weight=weight[from[iter]][i]/graph[from[iter]][i];
             to=i;
             }
         }
         passenger[from[iter]][to]=0;
-        printSolution(passenger);
+        printSolution(passenger,"passenger");
         for (int i=0;i<V;i++)
         for(int j=0;j<V;j++){
                 for(int k=0;path[i][j][k+1]!=-1&& k+1<V;k++){
@@ -270,7 +229,7 @@ int main()
         initialize(path,weight);
         update(graph,weight,passenger,path);
         printf(" %d ", iter);
-        printSolution(passenger);
+        printSolution(passenger,"passenger");
         }
         printf("%d ",0);
         for(int iter=1;iter<V;iter++)
