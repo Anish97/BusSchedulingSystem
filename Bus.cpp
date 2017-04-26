@@ -123,8 +123,6 @@ void floydWarshall (float graph[V][V],float passenger[V][V],float path[V][V][V])
     for (i = 0; i < V; i++)
         for (j = 0; j < V; j++){
             dist[i][j] = graph[i][j];
-
-
             }
 
     for (k = 0; k < V; k++)
@@ -214,14 +212,13 @@ void update(float graph[][V],float weight[][V],float passenger[][V],float path[]
    //        for(int k=0;path[i][j][k]!=-1;k++)
 
         }
-printSolution(weight);
-
+//printSolution(weight);
 
 }
 
 int main()
 {
-    float graph[V][V] = { {0,   5,  15, 10},
+    float graph[V][V] = { {0, 500,  15, 10},
                         {INF, 0,   1, 30},
                         {INF, INF, 0,   1},
                         {INF, INF, INF, 0}
@@ -233,36 +230,51 @@ int main()
                       };
     float weight[V][V];
     float path[V][V][V];
+
     for (int i=0;i<V;i++)
         for(int j=0;j<=i;j++){
-            graph[i][j]=graph[j][i];
-            passenger[i][j]=passenger[j][i];
+        //    graph[i][j]=graph[j][i];
+        //    passenger[i][j]=passenger[j][i];
         }
+
+        int from[V]={0,0,0,0};
+
+        for(int iter=0;iter<2*V;iter++){
         initialize(path,weight);
-        int from=0,max_weight=0,to=0;
+        int max_weight=0,to=0;
         update(graph,weight,passenger,path);
+        printSolution(weight);
+
         for(int i=0;i<V;i++){
-            if(max_weight<weight[from][i]){
-            max_weight=weight[from][i];
+                if(i==from[iter]) continue;
+                printf(" %f ", weight[from[iter]][i]/graph[from[iter]][i]);
+            if(max_weight<weight[from[iter]][i]/graph[from[iter]][i]){
+            max_weight=weight[from[iter]][i]/graph[from[iter]][i];
             to=i;
             }
         }
-        passenger[from][to]=0;
+        passenger[from[iter]][to]=0;
+        printSolution(passenger);
         for (int i=0;i<V;i++)
         for(int j=0;j<V;j++){
                 for(int k=0;path[i][j][k+1]!=-1&& k+1<V;k++){
-                if(path[i][j][k]==from&&path[i][j][k+1]==to){
-                    passenger[from][to]-=passenger[i][j];
+                if(path[i][j][k]==from[iter]&&path[i][j][k+1]==to){
+                    passenger[from[iter]][to]=0;
+                    passenger[to][j]+=passenger[i][j];
+                    passenger[i][j]=0;
                     }
                 }
         }
-        from=to;
+
+        from[iter+1]=to;
         initialize(path,weight);
         update(graph,weight,passenger,path);
-    // Print the solution
-  //  printSolution(graph);
-//    dijkstra(graph, 0);
-
+        printf(" %d ", iter);
+        printSolution(passenger);
+        }
+        printf("%d ",0);
+        for(int iter=1;iter<V;iter++)
+        printf ("--> %d ", from[iter]);
 
     return 0;
 }
