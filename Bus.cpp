@@ -11,7 +11,7 @@ void printPath(int parent[], int j, int k,int arr[V])
 
     printPath(parent, parent[j],k+1,arr);
     arr[k]=j;
-    printf("%d ", j);
+ //   printf("%d ", j);
 }
 
 void printSolution(float dist[][V]);
@@ -166,7 +166,7 @@ void printSolution(float dist[V][V])
             if (dist[i][j] == INF)
                 printf("%s ", "INF");
             else
-                printf ("%f ", dist[i][j]);
+                printf (" %f ", dist[i][j]);
         }
         printf("\n");
     }
@@ -181,7 +181,7 @@ void printSolution(float dist[V][V][V])
         for (int j = 0; j < V; j++)
         {
             for(int k=0;k<V;k++)
-                printf ("%f ", dist[i][j][k]);
+                printf (" %f ", dist[i][j][k]);
             printf("\n");
         }
         printf("\n");
@@ -189,16 +189,46 @@ void printSolution(float dist[V][V][V])
 }
 
 // driver program to test above function
+void initialize(float path[][V][V], float weight[][V]){
+    for(int i=0;i<V;i++)
+        for(int j=0;j<V;j++){
+                weight[i][j]=0;
+                path[i][j][0]=i;
+            for(int k=1;k<V;k++)
+                path[i][j][k]=-1;
+    }
+
+}
+void update(float graph[][V],float weight[][V],float passenger[][V],float path[][V][V]){
+    for(int i=0;i<V;i++)
+    dijkstra(graph,i, path);
+ //   printSolution(passenger);
+ //   printSolution(path);
+    for (int i=0;i<V;i++)
+        for(int j=0;j<V;j++){
+            int k=0;
+                for(k=0;path[i][j][k+1]!=-1&& k+1<V;k++){
+        weight[(int)path[i][j][k]][(int)path[i][j][k+1]]+=passenger[i][j];
+                }
+ //       weight[k+1][j]+=passenger[i][j];
+   //        for(int k=0;path[i][j][k]!=-1;k++)
+
+        }
+printSolution(weight);
+
+
+}
+
 int main()
 {
-    float graph[V][V] = { {0,   5,  11, 10},
-                        {INF, 0,   1, 3},
+    float graph[V][V] = { {0,   5,  15, 10},
+                        {INF, 0,   1, 30},
                         {INF, INF, 0,   1},
                         {INF, INF, INF, 0}
                       };
-    float passenger[V][V]={ {0,   14,  5, 15},
-                        {0, 0,   2, 39},
-                        {0, 0, 0, 11},
+    float passenger[V][V]={ {0, 14, 55, 45},
+                        {0, 0, 32, 39},
+                        {0, 0, 0, 71},
                         {0, 0, 0, 0}
                       };
     float weight[V][V];
@@ -207,32 +237,31 @@ int main()
         for(int j=0;j<=i;j++){
             graph[i][j]=graph[j][i];
             passenger[i][j]=passenger[j][i];
-            path[i][j][0]=i;
-            path[j][i][0]=j;
-            for(int k=1;k<V;k++){
-                path[i][j][k]=-1;
-                path[j][i][k]=-1;
-                        }
         }
+        initialize(path,weight);
+        int from=0,max_weight=0,to=0;
+        update(graph,weight,passenger,path);
+        for(int i=0;i<V;i++){
+            if(max_weight<weight[from][i]){
+            max_weight=weight[from][i];
+            to=i;
+            }
+        }
+        passenger[from][to]=0;
+        for (int i=0;i<V;i++)
+        for(int j=0;j<V;j++){
+                for(int k=0;path[i][j][k+1]!=-1&& k+1<V;k++){
+                if(path[i][j][k]==from&&path[i][j][k+1]==to){
+                    passenger[from][to]-=passenger[i][j];
+                    }
+                }
+        }
+        from=to;
+        initialize(path,weight);
+        update(graph,weight,passenger,path);
     // Print the solution
   //  printSolution(graph);
 //    dijkstra(graph, 0);
-    for(int i=0;i<V;i++)
-    dijkstra(graph,i, path);
- //   printSolution(passenger);
-    printSolution(path);
-
-    for (int i=0;i<V;i++)
-        for(int j=0;j<V;j++){
-            int k=0;
-                for(k=0;path[i][j][k+1]!=-1&&k+1<V;k++){
-        weight[(int)path[i][j][k]][(int)path[i][j][k+1]]+=passenger[i][j];
-                }
- //       weight[k+1][j]+=passenger[i][j];
-   //        for(int k=0;path[i][j][k]!=-1;k++)
-
-        }
-printSolution(weight);
 
 
     return 0;
