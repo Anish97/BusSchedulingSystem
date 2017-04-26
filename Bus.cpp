@@ -58,7 +58,7 @@ int minDistance(float dist[], bool sptSet[])
 
 // algorithm for a graph represented using adjacency matrix
 // representation
-void dijkstra(float graph[V][V], int src,float path[][V][V])
+void dijkstra(float graph[V][V], float passenger[][V], int src,float path[][V][V])
 {
     float dist[V];  // The output array. dist[i] will hold
                   // the shortest distance from src to i
@@ -158,7 +158,7 @@ void initialize(float path[][V][V], float weight[][V]){
 }
 void update(float graph[][V],float weight[][V],float passenger[][V],float path[][V][V]){
     for(int i=0;i<V;i++)
-    dijkstra(graph,i, path);
+    dijkstra(graph,passenger,i, path);
  //   printSolution(passenger);
  //   printSolution(path);
     for (int i=0;i<V;i++)
@@ -178,9 +178,9 @@ void update(float graph[][V],float weight[][V],float passenger[][V],float path[]
 int main()
 {
     float graph[V][V] = { {0, 500, 15, 10},
-                        {INF, 0, 1, 30},
-                        {INF, INF, 0,   1},
-                        {INF, INF, INF, 0}
+                        {INF, 0, 100, 30},
+                        {INF, 100, 0, 100},
+                        {INF, INF, INF, INF}
                       };
     float passenger[V][V]={ {0, 14, 55, 45},
                         {0, 0, 32, 39},
@@ -189,16 +189,16 @@ int main()
                       };
     float weight[V][V];
     float path[V][V][V];
-
     for (int i=0;i<V;i++)
         for(int j=0;j<=i;j++){
-            graph[i][j]=graph[j][i];
+         //   graph[i][j]=graph[j][i];
         //    passenger[i][j]=passenger[j][i];
         }
+        int n=4;
+        int from[n*V];
+        from[0]=0;
 
-        int from[V]={0,0,0,0};
-
-        for(int iter=0;iter<2*V;iter++){
+        for(int iter=0;iter<n*V;iter++){
         initialize(path,weight);
         int max_weight=0,to=0;
         update(graph,weight,passenger,path);
@@ -220,7 +220,7 @@ int main()
                 if(path[i][j][k]==from[iter]&&path[i][j][k+1]==to){
                     passenger[from[iter]][to]=0;
                     passenger[to][j]+=passenger[i][j];
-                    passenger[i][j]=0;
+              //      passenger[i][j]=0;
                     }
                 }
         }
@@ -232,7 +232,7 @@ int main()
         printSolution(passenger,"passenger");
         }
         printf("%d ",0);
-        for(int iter=1;iter<V;iter++)
+        for(int iter=1;iter<n*V;iter++)
         printf ("--> %d ", from[iter]);
 
     return 0;
